@@ -20,7 +20,8 @@ class Input
 	public:
 				Input();
 				~Input();
-		void	handler(void);
+		void	listener(void);
+		void	handler(POCube* boxanne);
 		void	setKeyState(char character, bool state);
 		bool	getKeyState(char character);
 	protected:

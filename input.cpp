@@ -53,47 +53,88 @@ Input::~Input()
 {
 }
 
-void	Input::handler(void)
+void	Input::listener(void)
 {
-	if((false == input.getKeyState('w') && false == input.getKeyState('s')) || true == input.getKeyState('w') && true == input.getKeyState('s'))
+	XEvent bugEvent;
+	KeySym keysym;
+	char *keyString = NULL;
+
+	if(!XPending(display))
 	{
-		boxanne.setVelY(0);
+		return;
 	}
-	else if(true == input.getKeyState('w') && PLAYER_SPEED > boxanne.getVelY())
+	XNextEvent(display, &event);
+	if(KeyPress == event.type)
 	{
-	//	boxanne.addVelY(PLAYER_SPEED);
-		boxanne.setVelY(PLAYER_SPEED);
+		XLookupString(&event.xkey, keyString, 32, &keysym, NULL);
+		keyString = XKeysymToString(keysym);
+		if(0 == strcmp("Escape", keyString))
+		{
+			quit();
+		}
+		input.setKeyState(*keyString, true);
+		std::cout << "'" << keyString << "' key pressed." << std::endl;
 	}
-	else if(true == input.getKeyState('s') && -PLAYER_SPEED < boxanne.getVelY())
+	else if(KeyRelease == event.type)
 	{
-	//	boxanne.addVelY(-PLAYER_SPEED);
-		boxanne.setVelY(-PLAYER_SPEED);
+		// Check for X11 auto-repeat, dispose of false releases/presses
+		if(XPending(display))	// Make sure there are events in the queue to prevent XPeekEvent from blocking execution.
+		{
+			XPeekEvent(display, &bugEvent);
+		}
+		if(KeyPress == bugEvent.type && bugEvent.xkey.keycode == event.xkey.keycode && bugEvent.xkey.time == event.xkey.time)
+		{
+			std::cout << "Extra key release, discarding." << std::endl;
+			XNextEvent(display, &bugEvent);
+			return;
+		}
+		//======================
+		XLookupString(&event.xkey, keyString, 32, &keysym, NULL);
+		keyString = XKeysymToString(keysym);
+		input.setKeyState(*keyString, false);
+		std::cout << "'" << keyString << "' key released" << std::endl;
+	}
+}
+
+void	Input::handler(POCube* boxanne)
+{
+	if((false == input.getKeyState('w') && false == input.getKeyState('s')) || (true == input.getKeyState('w') && true == input.getKeyState('s')))
+	{
+		boxanne->setVelY(0);
+	}
+	else if(true == input.getKeyState('w'))
+	{
+		boxanne->addVelY(PLAYER_SPEED);
+	}
+	else if(true == input.getKeyState('s'))
+	{
+		boxanne->addVelY(-PLAYER_SPEED);
 	}
 	if((false == input.getKeyState('a') && false == input.getKeyState('d')) || (true == input.getKeyState('a') && true == input.getKeyState('d')))
 	{
-		boxanne.setVelX(0);
+		boxanne->setVelX(0);
 	}
-	else if(true == input.getKeyState('a') && -PLAYER_SPEED < boxanne.getVelX())
+	else if(true == input.getKeyState('a'))
 	{
-		boxanne.addVelX(-PLAYER_SPEED);
+		boxanne->addVelX(-PLAYER_SPEED);
 	}
-	else if(true == input.getKeyState('d') && PLAYER_SPEED > boxanne.getVelX())
+	else if(true == input.getKeyState('d'))
 	{
-		boxanne.addVelX(PLAYER_SPEED);
+		boxanne->addVelX(PLAYER_SPEED);
 	}
 	if((false == input.getKeyState('q') && false == input.getKeyState('e')) || (true == input.getKeyState('q') && true == input.getKeyState('e')))
 	{
-		boxanne.setVelZ(0);
+		boxanne->setVelZ(0);
 	}
-	else if(true == input.getKeyState('q') && -PLAYER_SPEED < boxanne.getVelX())
+	else if(true == input.getKeyState('q'))
 	{
-		boxanne.addVelZ(-PLAYER_SPEED);
+		boxanne->addVelZ(-PLAYER_SPEED);
 	}
-	else if(true == input.getKeyState('e') && PLAYER_SPEED > boxanne.getVelX())
+	else if(true == input.getKeyState('e'))
 	{
-		boxanne.addVelZ(PLAYER_SPEED);
+		boxanne->addVelZ(PLAYER_SPEED);
 	}
-	boxanne.move();
+	boxanne->move();
 }
 
 void	Input::setKeyState(char character, bool state)

@@ -14,10 +14,12 @@ class Object
 		unsigned char*	getColor(void);
 	//	bool			isInBounds(void);	// TO DO: create general method that checks to see if object is within game window
 	protected:
-		float			mPosX;
-		float			mPosY;
-		float			mPosZ;
+		float			mPos[3];
 		unsigned char	mColor[3];
+		GLuint			mVAO;
+		GLuint			mVBO;
+		GLfloat			mVertices[];
+		Ogg			mOggFile;
 };
 
 class PhysicsObject : public Object
@@ -36,9 +38,7 @@ class PhysicsObject : public Object
 		void			addVelY(float y);
 		void			addVelZ(float z);
 	protected:
-		float			mVelX;
-		float			mVelY;
-		float			mVelZ;
+		float			mVel[3];
 };
 
 class POCube : public PhysicsObject

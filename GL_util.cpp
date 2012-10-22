@@ -8,7 +8,7 @@ void GL_reshape(int x, int y)
 	}
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-//	glOrtho(-100.0, 100.0, -100.0, 100.0,-1.0, 1.0);
+//	glOrtho(-10.0, 10.0, -10.0, 10.0, -1.0, 1.0);
 	gluPerspective(45.0, (GLdouble)x / (GLdouble)y, 0.01, 1000.0);
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y);
